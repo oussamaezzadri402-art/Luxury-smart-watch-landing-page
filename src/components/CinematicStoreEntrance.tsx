@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, ArrowLeft, Volume2, VolumeX, Eye } from 'lucide-react';
 import { WatchVariation } from '../types';
+import facadeImg from '../assets/images/rolex_boutique_facade_1785881811734.jpg';
+import interiorImg from '../assets/images/rolex_boutique_interior_1785881826962.jpg';
 
 interface CinematicStoreEntranceProps {
   selectedWatch: WatchVariation;
@@ -85,7 +87,7 @@ export default function CinematicStoreEntrance({ selectedWatch, onComplete }: Ci
             className="absolute inset-0 w-full h-full"
           >
             <img
-              src="/images/rolex_boutique_facade_1785881811734.jpg"
+              src={facadeImg}
               alt="Rolex Boutique Exterior Facade"
               className="w-full h-full object-cover object-center"
               loading="eager"
@@ -128,7 +130,7 @@ export default function CinematicStoreEntrance({ selectedWatch, onComplete }: Ci
             className="absolute inset-0 w-full h-full flex items-center justify-center"
           >
             <img
-              src="/images/rolex_boutique_interior_1785881826962.jpg"
+              src={interiorImg}
               alt="Rolex Boutique Interior Room Showcase"
               className="w-full h-full object-cover object-center"
               loading="eager"

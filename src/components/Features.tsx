@@ -4,6 +4,7 @@ import {
   Settings, CheckCircle2 
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import silverFeaturesImg from '../assets/images/rolex_silver_features_1785763565747.jpg';
 
 export default function Features() {
   const mainFeatures = [
@@ -126,7 +127,7 @@ export default function Features() {
               <div className="absolute inset-0 bg-radial from-emerald-500/5 to-transparent rounded-2xl" />
               
               <img 
-                src="/images/rolex_silver_features_1785763565747.jpg"
+                src={silverFeaturesImg}
                 alt="Rolex Silver Watch fluted bezel close-up detail"
                 className="w-full object-cover aspect-[4/3] rounded-xl hover:scale-103 transition-transform duration-500"
                 loading="lazy"

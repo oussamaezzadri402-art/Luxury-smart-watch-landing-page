@@ -1,4 +1,7 @@
 import { WatchVariation, Review } from './types';
+import roseGoldImg from './assets/images/rolex_rose_gold_1785877312553.jpg';
+import iceBlueImg from './assets/images/rolex_ice_blue_1785877323224.jpg';
+import navyBlueImg from './assets/images/rolex_navy_blue_1785877337027.jpg';
 
 export const WATCH_VARIATIONS: WatchVariation[] = [
   {
@@ -7,7 +10,7 @@ export const WATCH_VARIATIONS: WatchVariation[] = [
     nameAr: 'روليكس روز جولد - ميناء خلية النحل الملكي',
     price: 399, // 399 DH
     originalPrice: 799,
-    image: '/images/rolex_rose_gold_1785877312553.jpg',
+    image: roseGoldImg,
     colorCode: '#f59e0b', // Rose Gold Amber
     colorName: 'روز جولد فاخر (Rose Gold)',
     strapType: 'metal',
@@ -19,7 +22,7 @@ export const WATCH_VARIATIONS: WatchVariation[] = [
     nameAr: 'روليكس داي-ديت فضية - ميناء أيس بلو نيزكي',
     price: 399,
     originalPrice: 799,
-    image: '/images/rolex_ice_blue_1785877323224.jpg',
+    image: iceBlueImg,
     colorCode: '#38bdf8', // Ice Blue Sky
     colorName: 'أيس بلو نيزكي (Ice Blue)',
     strapType: 'metal',
@@ -31,7 +34,7 @@ export const WATCH_VARIATIONS: WatchVariation[] = [
     nameAr: 'روليكس ديت-جست الفضية - ميناء أزرق أطلسي',
     price: 399,
     originalPrice: 799,
-    image: '/images/rolex_navy_blue_1785877337027.jpg',
+    image: navyBlueImg,
     colorCode: '#2563eb', // Atlantic Navy Blue
     colorName: 'أزرق أطلسي ملكي',
     strapType: 'metal',
@@ -72,7 +75,7 @@ export const CUSTOMER_REVIEWS: Review[] = [
     date: 'منذ ساعتين',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     verifiedPurchase: true,
-    productImage: '/images/rolex_rose_gold_1785877312553.jpg'
+    productImage: roseGoldImg
   },
   {
     id: 'rev-2',
@@ -93,7 +96,7 @@ export const CUSTOMER_REVIEWS: Review[] = [
     date: 'منذ يومين',
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
     verifiedPurchase: true,
-    productImage: '/images/rolex_ice_blue_1785877323224.jpg'
+    productImage: iceBlueImg
   },
   {
     id: 'rev-4',
