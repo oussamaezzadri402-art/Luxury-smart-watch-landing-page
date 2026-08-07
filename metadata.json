@@ -1,0 +1,6 @@
+{
+  "name": "Rolex Silver Edition Landing Page",
+  "description": "An ultra-premium, high-converting Moroccan Darija landing page for a luxury Silver Rolex watch, featuring custom interactive 3D dial selectors, live checkout order tracking, and a built-in Developer console.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
