@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { WatchVariation } from '../types';
 import { MessageCircle, X, Sparkles, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { sendOrderToGoogleSheets } from '../lib/googleSheets';
 
 interface WhatsAppButtonProps {
   selectedVariation: WatchVariation;
@@ -55,6 +56,12 @@ export default function WhatsAppButton({ selectedVariation, onFirePixel }: Whats
       variation_id: selectedVariation.id,
       variation_name: selectedVariation.nameAr,
       price: selectedVariation.price
+    });
+
+    sendOrderToGoogleSheets({
+      selectedWatch: `${selectedVariation.nameAr} (${selectedVariation.colorName})`,
+      price: selectedVariation.price,
+      source: 'WhatsApp Floating Button CTA'
     });
 
     const waUrl = `https://wa.me/${phoneNumber}?text=${generateWhatsAppMessage()}`;

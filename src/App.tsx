@@ -16,6 +16,7 @@ import CinematicStoreEntrance from './components/CinematicStoreEntrance';
 
 import { Order, PixelEvent, WatchVariation } from './types';
 import { WATCH_VARIATIONS } from './data';
+import { initMetaPixel, trackMetaPixel } from './lib/metaPixel';
 
 export default function App() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -43,6 +44,9 @@ export default function App() {
 
   // Load orders and pixel events from localStorage on mount
   useEffect(() => {
+    // Initialize Meta Pixel script dynamically if VITE_META_PIXEL_ID is set
+    initMetaPixel();
+
     const savedOrders = localStorage.getItem('kronos_portfolio_orders');
     if (savedOrders) {
       try {
@@ -65,11 +69,14 @@ export default function App() {
     localStorage.setItem('kronos_portfolio_orders', JSON.stringify(newOrders));
   };
 
-  // Log Pixel Event (both Facebook and TikTok placeholders)
+  // Log Pixel Event (both Meta Pixel and in-app events)
   const firePixelEvent = (
     eventName: PixelEvent['eventName'], 
     payload: Record<string, any> = {}
   ) => {
+    // Track via Meta Pixel
+    trackMetaPixel(eventName, payload);
+
     const timestamp = new Date().toISOString();
     const eventId = 'EVT_' + Math.random().toString(36).substr(2, 9).toUpperCase();
     
@@ -98,6 +105,13 @@ export default function App() {
 
   const handleSelectVariation = (variation: WatchVariation) => {
     setSelectedVariation(variation);
+    firePixelEvent('AddToCart', {
+      content_name: variation.name,
+      content_id: variation.id,
+      content_type: 'product',
+      value: variation.price,
+      currency: 'MAD'
+    });
   };
 
   const handleAddOrder = (order: Order) => {

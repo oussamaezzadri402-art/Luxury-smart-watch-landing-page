@@ -1,6 +1,7 @@
 import { useState, useRef, RefObject, FormEvent } from 'react';
 import { WatchVariation, Order } from '../types';
 import { MOROCCAN_CITIES } from '../data';
+import { sendOrderToGoogleSheets } from '../lib/googleSheets';
 import { 
   ShieldCheck, ShoppingCart, User, Phone, MapPin, 
   Truck, ArrowRight, CheckCircle2, Gift, MessageCircle, AlertCircle
@@ -99,6 +100,19 @@ export default function Checkout({
       setLatestOrder(newOrder);
       setIsSuccess(true);
       setIsSubmitting(false);
+
+      // Async send order details to Google Sheets (non-blocking)
+      sendOrderToGoogleSheets({
+        timestamp: newOrder.timestamp,
+        selectedWatch: newOrder.variationName,
+        price: newOrder.totalPrice,
+        customerName: newOrder.fullName,
+        phoneNumber: newOrder.phone,
+        city: newOrder.city,
+        address: newOrder.address,
+        quantity: newOrder.quantity,
+        source: 'Checkout Form'
+      });
 
       // Fire conversion pixel!
       onFirePixel('Purchase', {
