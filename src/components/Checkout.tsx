@@ -1,6 +1,5 @@
 import { useState, useRef, RefObject, FormEvent } from 'react';
 import { WatchVariation, Order } from '../types';
-import { MOROCCAN_CITIES } from '../data';
 import { sendOrderToGoogleSheets } from '../lib/googleSheets';
 import { 
   ShieldCheck, ShoppingCart, User, Phone, MapPin, 
@@ -23,7 +22,7 @@ export default function Checkout({
 }: CheckoutProps) {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [city, setCity] = useState(MOROCCAN_CITIES[0].name);
+  const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,6 +58,10 @@ export default function Checkout({
     
     if (!phoneRegex.test(phoneClean)) {
       newErrors.phone = 'المرجو إدخال رقم هاتف مغربي صحيح (مثال: 0612345678)';
+    }
+
+    if (city.trim().length < 2) {
+      newErrors.city = 'المرجو إدخال إسم مدينتك';
     }
 
     if (address.trim().length < 8) {
@@ -223,27 +226,31 @@ export default function Checkout({
                 {/* 3. City Selection */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5 justify-end">
-                    <span>اختر المدينة:</span>
+                    <span>المدينة:</span>
                     <MapPin className="w-3.5 h-3.5 text-emerald-500" />
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={city}
                     onChange={(e) => {
                       setCity(e.target.value);
-                      onFirePixel('InitiateCheckout', { action: 'select_city', value: e.target.value });
+                      onFirePixel('InitiateCheckout', { action: 'type_city', value: e.target.value });
                     }}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-4 focus:ring-emerald-500/20 transition-all text-right cursor-pointer"
+                    placeholder="كتب المدينة ديالك"
+                    className={`w-full bg-slate-900 border ${errors.city ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-800 focus:ring-emerald-500/20'} rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all text-right`}
                     disabled={isSubmitting}
                     id="checkout-city"
-                  >
-                    {MOROCCAN_CITIES.map((c, i) => (
-                      <option key={i} value={c.name} className="bg-slate-950">
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
+                  {errors.city && (
+                    <span className="text-[10px] text-red-400 flex items-center gap-1 justify-end mt-1 font-bold">
+                      <span>{errors.city}</span>
+                      <AlertCircle className="w-3 h-3" />
+                    </span>
+                  )}
                   <div className="text-[10px] text-emerald-400 bg-emerald-900/10 border border-emerald-950 px-2.5 py-1.5 rounded-lg flex items-center justify-between flex-row-reverse mt-1">
-                    <span className="font-bold">التوصيل لـ {city.split(' ')[0]} مجاني 100% فابور! 🚚</span>
+                    <span className="font-bold">
+                      {city.trim() ? `التوصيل لـ ${city.trim().split(' ')[0]} مجاني 100% فابور! 🚚` : 'التوصيل لجميع المدن المغربية مجاني 100% فابور! 🚚'}
+                    </span>
                     <span className="font-semibold text-[9px] uppercase font-mono">FREE SHIPPING</span>
                   </div>
                 </div>
