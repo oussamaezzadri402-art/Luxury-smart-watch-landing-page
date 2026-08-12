@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'motion/react';
 interface CheckoutProps {
   selectedVariation: WatchVariation;
   onAddOrder: (order: Order) => void;
-  onFirePixel: (eventName: 'PageView' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
+  onFirePixel: (eventName: 'PageView' | 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
   checkoutRef: RefObject<HTMLDivElement | null>;
 }
 
@@ -31,6 +31,22 @@ export default function Checkout({
 
   // Errors state
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Flag to ensure InitiateCheckout is fired only once per checkout session
+  const hasFiredInitiateCheckout = useRef(false);
+
+  const handleStartCheckout = () => {
+    if (!hasFiredInitiateCheckout.current) {
+      hasFiredInitiateCheckout.current = true;
+      onFirePixel('InitiateCheckout', {
+        content_name: selectedVariation.name,
+        content_id: selectedVariation.id,
+        value: total,
+        currency: 'MAD',
+        quantity
+      });
+    }
+  };
 
   // Calculate prices based on quantity bundle
   // 1 Watch: 399 DH
@@ -72,40 +88,36 @@ export default function Checkout({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmitOrder = (e: FormEvent) => {
+  const handleSubmitOrder = async (e: FormEvent) => {
     e.preventDefault();
     
+    // Ensure InitiateCheckout event is fired on form submit if not already fired
+    handleStartCheckout();
+
     if (!validateForm()) {
-      onFirePixel('InitiateCheckout', { error: 'validation_failed', form: 'checkout_fields' });
       return;
     }
 
     setIsSubmitting(true);
 
-    // Simulate database write latency
-    setTimeout(() => {
-      const orderId = 'ORD_' + Math.random().toString(36).substr(2, 9).toUpperCase();
-      const newOrder: Order = {
-        id: orderId,
-        fullName: fullName.trim(),
-        phone: phone.trim(),
-        city,
-        address: address.trim(),
-        variationId: selectedVariation.id,
-        variationName: `${selectedVariation.name} (Strap: ${selectedVariation.strapNameAr})`,
-        quantity,
-        totalPrice: total,
-        status: 'new',
-        timestamp: new Date().toISOString()
-      };
+    const orderId = 'ORD_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const newOrder: Order = {
+      id: orderId,
+      fullName: fullName.trim(),
+      phone: phone.trim(),
+      city: city.trim(),
+      address: address.trim(),
+      variationId: selectedVariation.id,
+      variationName: `${selectedVariation.name} (Strap: ${selectedVariation.strapNameAr})`,
+      quantity,
+      totalPrice: total,
+      status: 'new',
+      timestamp: new Date().toISOString()
+    };
 
-      onAddOrder(newOrder);
-      setLatestOrder(newOrder);
-      setIsSuccess(true);
-      setIsSubmitting(false);
-
-      // Async send order details to Google Sheets (non-blocking)
-      sendOrderToGoogleSheets({
+    // 1. Send order details to Google Sheets and WAIT for completion
+    try {
+      await sendOrderToGoogleSheets({
         timestamp: newOrder.timestamp,
         selectedWatch: newOrder.variationName,
         price: newOrder.totalPrice,
@@ -116,17 +128,26 @@ export default function Checkout({
         quantity: newOrder.quantity,
         source: 'Checkout Form'
       });
+    } catch (err) {
+      console.warn('[Google Sheets] Order submission error:', err);
+    }
 
-      // Fire conversion pixel!
-      onFirePixel('Purchase', {
-        transaction_id: orderId,
-        value: total,
-        currency: 'MAD',
-        quantity,
-        item_name: selectedVariation.name,
-        city
-      });
-    }, 1200);
+    // 2. Fire Purchase pixel ONLY AFTER Google Sheets submission completes
+    onFirePixel('Purchase', {
+      transaction_id: orderId,
+      value: total,
+      currency: 'MAD',
+      quantity,
+      content_name: selectedVariation.name,
+      content_id: selectedVariation.id,
+      item_name: selectedVariation.name,
+      city: newOrder.city
+    });
+
+    onAddOrder(newOrder);
+    setLatestOrder(newOrder);
+    setIsSuccess(true);
+    setIsSubmitting(false);
   };
 
   const handleResetForm = () => {
@@ -183,6 +204,7 @@ export default function Checkout({
                   <input
                     type="text"
                     value={fullName}
+                    onFocus={handleStartCheckout}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="مثال: أمين بنجلون"
                     className={`w-full bg-slate-900 border ${errors.fullName ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-800 focus:ring-emerald-500/20'} rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all text-right`}
@@ -206,6 +228,7 @@ export default function Checkout({
                   <input
                     type="tel"
                     value={phone}
+                    onFocus={handleStartCheckout}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="مثال: 0612345678"
                     className={`w-full bg-slate-900 border ${errors.phone ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-800 focus:ring-emerald-500/20'} rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all text-left font-mono`}
@@ -232,9 +255,10 @@ export default function Checkout({
                   <input
                     type="text"
                     value={city}
+                    onFocus={handleStartCheckout}
                     onChange={(e) => {
                       setCity(e.target.value);
-                      onFirePixel('InitiateCheckout', { action: 'type_city', value: e.target.value });
+                      handleStartCheckout();
                     }}
                     placeholder="كتب المدينة ديالك"
                     className={`w-full bg-slate-900 border ${errors.city ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-800 focus:ring-emerald-500/20'} rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-4 transition-all text-right`}
@@ -263,6 +287,7 @@ export default function Checkout({
                   </label>
                   <textarea
                     value={address}
+                    onFocus={handleStartCheckout}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="مثال: حي السلام، شارع المقاومة، عمارة 4، شقة 10، وجدة"
                     rows={2}

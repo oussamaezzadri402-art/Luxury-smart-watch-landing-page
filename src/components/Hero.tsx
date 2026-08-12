@@ -8,7 +8,7 @@ interface HeroProps {
   selectedVariation: WatchVariation;
   onSelectVariation: (v: WatchVariation) => void;
   onScrollToCheckout: () => void;
-  onFirePixel: (eventName: 'PageView' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
+  onFirePixel: (eventName: 'PageView' | 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
 }
 
 const HERO_GLOW_STYLES: Record<string, {

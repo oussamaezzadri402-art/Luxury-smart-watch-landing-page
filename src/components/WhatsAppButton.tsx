@@ -6,7 +6,7 @@ import { sendOrderToGoogleSheets } from '../lib/googleSheets';
 
 interface WhatsAppButtonProps {
   selectedVariation: WatchVariation;
-  onFirePixel: (eventName: 'PageView' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
+  onFirePixel: (eventName: 'PageView' | 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
 }
 
 export default function WhatsAppButton({ selectedVariation, onFirePixel }: WhatsAppButtonProps) {

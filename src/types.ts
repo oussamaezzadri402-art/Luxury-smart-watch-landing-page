@@ -40,7 +40,7 @@ export interface Review {
 export interface PixelEvent {
   id: string;
   platform: 'facebook' | 'tiktok' | 'google';
-  eventName: 'PageView' | 'AddToCart' | 'InitiateCheckout' | 'Purchase';
+  eventName: 'PageView' | 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase';
   payload: Record<string, any>;
   timestamp: string;
 }

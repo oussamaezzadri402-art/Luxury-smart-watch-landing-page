@@ -61,6 +61,15 @@ export default function App() {
       page_title: 'ROLEX Luxury Watch Boutique Morocco - 3D Reveal',
       referrer: 'Facebook Ads / Instagram Ads / TikTok Ads'
     });
+
+    // Fire ViewContent event when product page/content is viewed
+    firePixelEvent('ViewContent', {
+      content_name: WATCH_VARIATIONS[0].name,
+      content_id: WATCH_VARIATIONS[0].id,
+      content_type: 'product',
+      value: WATCH_VARIATIONS[0].price,
+      currency: 'MAD'
+    });
   }, []);
 
   // Save orders to localStorage when they change

@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 interface InteractiveWatchProps {
   onSelectVariation: (variation: WatchVariation) => void;
   onScrollToCheckout: () => void;
-  onFirePixel: (eventName: 'PageView' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
+  onFirePixel: (eventName: 'PageView' | 'ViewContent' | 'AddToCart' | 'InitiateCheckout' | 'Purchase', payload?: Record<string, any>) => void;
 }
 
 const MODEL_DETAILS: Record<string, { badge: string; desc: string }> = {
