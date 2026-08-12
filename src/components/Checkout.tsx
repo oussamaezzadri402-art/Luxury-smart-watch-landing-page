@@ -157,6 +157,7 @@ export default function Checkout({
     setQuantity(1);
     setIsSuccess(false);
     setLatestOrder(null);
+    hasFiredInitiateCheckout.current = false;
   };
 
   return (
